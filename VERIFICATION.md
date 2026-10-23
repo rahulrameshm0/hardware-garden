@@ -30,5 +30,5 @@ Browser dimensions simulate devices; no physical Android/iPhone installation or 
 - Real local username account creation and login pass, including rejected wrong passwords, saved progress, cross-origin protection, PKCE-bound mobile exchange, signed bearer session verification, replay prevention, and logout.
 - Android and iOS native projects were generated and synchronized. The mobile web bundle builds successfully.
 - Google project creation succeeded; OAuth onboarding is unfinished because the browser connection closed. Apple developer credentials were unavailable.
-- The current private hosting gate is preserved. Native API access from a fresh installation remains dependent on replacing that gate with the app's own sign-in.
-- Local native compilation is unavailable because this host has neither a full Xcode installation nor JDK/Android SDK. The repository includes a mobile build workflow for Android APK and iOS simulator artifacts; those results must be checked independently of the bundled web build.
+- The owner approved replacing the ChatGPT-only gate with app sign-in. Live API checks pass: password login is enabled, anonymous progress requests are denied, and native CORS is available.
+- Local native compilation is unavailable because this host has neither a full Xcode installation nor JDK/Android SDK. The iOS simulator build succeeded in GitHub Actions (run 39919356274). Android initially failed because the setup action requested a removed SDK tools package; the workflow now requests platform-tools explicitly and is being rerun.

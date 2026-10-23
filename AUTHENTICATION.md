@@ -36,7 +36,7 @@ Generate the client-secret JWT from the developer signing key and rotate it befo
 
 ## Hosting boundary
 
-The existing Site remains owner-private. Its platform-level ChatGPT gate precedes app login. To replace ChatGPT-only access, the owner must authorize a hosting policy change or select another host for the same backend. The app's own API already enforces account ownership, but the current platform gate is intentionally preserved until that decision is made.
+The owner approved replacing the ChatGPT-only platform gate with application sign-in. The site is reachable without ChatGPT. API session verification, account ownership checks, CSRF protection, and rate limits protect personal records. Production checks confirmed anonymous progress requests are denied and native origins receive the correct CORS response.
 
 Existing ChatGPT learning records remain in their original namespace. New app accounts have a separate account namespace; account data is never transferred just because email strings match.
 

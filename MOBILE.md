@@ -19,7 +19,7 @@ The GitHub workflow **Build mobile apps** builds an Android debug APK and an uns
 
 The native build uses `HG_API_BASE_URL`, defaulting to the existing Hardware Garden website. Override it during `npm run mobile:build` if moving to another backend. Cross-origin access is restricted to the native localhost origins. Personal records always require a server-verified session and matching account ID.
 
-The current Sites deployment is owner-private and requires ChatGPT at the hosting boundary. That boundary must be replaced by the app's own authentication before a fresh native installation can reach its APIs. The website's access policy has not been changed without approval.
+The owner approved replacing the platform ChatGPT-only gate with application sign-in. The site is reachable without ChatGPT; account sessions protect all personal progress. Production checks confirm anonymous progress requests return 401 and native API origins receive the expected CORS headers.
 
 ## Native sign-in
 
