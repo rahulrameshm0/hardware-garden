@@ -31,6 +31,8 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - run: npm run mobile:build
       - run: npx cap sync android
+      - name: Verify assistant is bundled
+        run: node scripts/verify-mobile-bundle.mjs
       - run: chmod +x android/gradlew
       - run: ./gradlew assembleDebug --no-daemon
         working-directory: android
