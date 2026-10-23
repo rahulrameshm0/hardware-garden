@@ -20,7 +20,7 @@ The app enables OAuth buttons only when their server credentials are configured.
 
 ## Google
 
-A separate Google Cloud project named **Hardware Garden** (`hardware-garden`) was created in the signed-in Google account. OAuth onboarding and credentials are not complete. Finish Google Auth Platform branding and any required policy acceptance in the owner's console. Create a Web application client with this redirect URI:
+A separate Google Cloud project named **Hardware Garden** (`hardware-garden`) was created in the signed-in Google account. OAuth branding and Web client creation are complete; the client ID and secret are stored in Sites. The personal OAuth app remains in testing; the owner email was submitted as a test user. The registered redirect URI is:
 
 `https://hardware-garden-rahul.rahulrameshm98.chatgpt.site/api/auth/callback/google`
 

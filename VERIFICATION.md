@@ -21,7 +21,7 @@ Checked on 23 October 2026.
 
 ## Practical limits
 
-Browser dimensions simulate devices; no physical Android/iPhone installation or real second-device session was available. Hosted sign-in is provided by Sites and remains distinct from local mock sign-in. Course duration is an estimate including exploration, activities, and quizzes. Models are procedural CSS 3D educational illustrations. Captions are text-based interactive animations, not narrated recordings.
+Browser dimensions simulate devices; no physical Android/iPhone installation or real second-device session was available. Hosted account sign-in uses Better Auth and D1. Course duration is an estimate including exploration, activities, and quizzes. Models are procedural Three.js educational illustrations with a CSS diagram fallback. Captions are text-based interactive animations, not narrated recordings.
 
 ## Realistic hardware and native update
 
@@ -29,6 +29,13 @@ Browser dimensions simulate devices; no physical Android/iPhone installation or 
 - TypeScript, existing course/database tests, and the original local API checks pass after the update.
 - Real local username account creation and login pass, including rejected wrong passwords, saved progress, cross-origin protection, PKCE-bound mobile exchange, signed bearer session verification, replay prevention, and logout.
 - Android and iOS native projects were generated and synchronized. The mobile web bundle builds successfully.
-- Google project creation succeeded; OAuth onboarding is unfinished because the browser connection closed. Apple developer credentials were unavailable.
+- Google OAuth branding and Web client creation succeeded; credentials are stored in Sites. Apple developer credentials were unavailable.
 - The owner approved replacing the ChatGPT-only gate with app sign-in. Live API checks pass: password login is enabled, anonymous progress requests are denied, and native CORS is available.
-- Local native compilation is unavailable because this host has neither a full Xcode installation nor JDK/Android SDK. The iOS simulator build succeeded in GitHub Actions (run 39919356274). Android initially failed because the setup action requested a removed SDK tools package; the workflow now requests platform-tools explicitly and is being rerun.
+- Local native compilation is unavailable because this host has neither a full Xcode installation nor JDK/Android SDK. The iOS simulator build succeeded in GitHub Actions (run 39919356274). Android initially failed because the setup action requested a removed SDK tools package; the corrected workflow succeeded in run 39919813839. Both artifacts were downloaded to ignored outputs directories. The owner confirmed no Apple Developer membership is available, so Apple sign-in and device-signed iPhone distribution remain blocked by that requirement.
+
+## Gemini learning helper
+
+- Lesson-aware question input, course fallback, animated labeled storyboard, captions, voice selection, playback speed, and reduced-motion support implemented.
+- Gemini API key created in the dedicated Hardware Garden project and stored only in Sites secrets. No paid billing enabled.
+- Authenticated text and speech endpoints enforce origin checks, input limits, persistent atomic per-account quotas, and server-side credentials.
+- External Gemini requests from this local host did not complete; hosted AI and voice require production verification. Device speech and built-in explanations provide fallbacks.
