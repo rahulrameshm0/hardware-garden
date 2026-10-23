@@ -8,6 +8,13 @@
       "when": 1792737809194,
       "tag": "0000_demonic_thanos",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792740382606,
+      "tag": "0001_brown_bastion",
+      "breakpoints": true
     }
   ]
 }

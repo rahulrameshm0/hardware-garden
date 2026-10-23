@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Hardware Garden</string>
+    <string name="title_activity_main">Hardware Garden</string>
+    <string name="package_name">com.hardwaregarden.learn</string>
+    <string name="custom_url_scheme">com.hardwaregarden.learn</string>
+</resources>

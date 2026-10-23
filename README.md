@@ -42,3 +42,9 @@ Completion is never cleared by a stale write. Scores retain their best value. Re
 The site must be opened online once to cache its app shell. Open a 3D scene online once to cache its lazy-loaded model code. Installation depends on browser support: Android and desktop browsers can offer an install prompt; Safari on iPhone supports Share → Add to Home Screen. No app-store package is included.
 
 The initial publication is owner-private. Sites owns hosted sign-in, database provisioning, and production migrations. Keep `.openai/hosting.json` and `drizzle/` with the source. Do not implement custom sign-in endpoints or change the access policy to work around authentication errors.
+
+## Realistic viewer, dark mode, and native apps
+
+The current viewer uses Three.js with complete procedural hardware models, metal materials, studio lighting, RGB memory, shadows, orbit controls, zoom, automatic framing, exploded assembly, and keyboard controls. A labeled CSS diagram remains available as a fallback. Watch lessons now animate the actual hardware model, including fan rotation and visible data-flow particles. Dark mode is the default; the header toggle remembers light/dark preference across visits.
+
+See [MOBILE.md](MOBILE.md) for Android/iPhone builds and [AUTHENTICATION.md](AUTHENTICATION.md) for the account system and remaining provider configuration. The native app bundles course content and 3D scenes; it is more than a remote website wrapper.

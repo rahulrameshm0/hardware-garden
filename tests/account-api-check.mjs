@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import {randomBytes,createHash} from 'node:crypto';
+const base='http://127.0.0.1:5173',username='test_'+Date.now().toString(36),password=randomBytes(24).toString('base64url');
+const headers={'Content-Type':'application/json',Origin:base};
+const cookieOf=r=>r.headers.getSetCookie().map(v=>v.split(';')[0]).join('; ');
+async function post(path,body,extra={}){return fetch(base+path,{method:'POST',headers:{...headers,...extra},body:JSON.stringify(body)});}
+const config=await fetch(base+'/api/auth-config').then(r=>r.json());assert.equal(config.password,true,'Auth secret must be configured locally.');
+const signup=await post('/api/auth/sign-up/email',{name:'Local Test Learner',username,email:username+'@example.com',password});if(!signup.ok)throw Error('Sign-up failed: '+signup.status+' '+await signup.text());const cookie=cookieOf(signup);assert.ok(cookie);const created=await signup.json();assert.ok(created.user);assert.ok(!JSON.stringify(created).includes(password));
+const identity=await fetch(base+'/api/session',{headers:{cookie}}).then(r=>r.json());assert.ok(identity.id.startsWith('account:'));assert.equal(identity.kind,'account');
+const progressHeaders={cookie,'X-Learning-Account':identity.id};const progress={'1-1':{completed:true,score:3,step:4,positionAt:Date.now(),bookmarked:true,bookmarkAt:Date.now()}};assert.equal((await post('/api/progress',progress,progressHeaders)).status,200);
+const saved=await fetch(base+'/api/progress',{headers:progressHeaders}).then(r=>r.json());assert.equal(saved['1-1'].score,3);
+assert.equal((await post('/api/auth/sign-in/username',{username,password:'wrong password value'})).status,401);
+assert.equal((await post('/api/auth/sign-in/username',{username,password})).status,200);
+assert.equal((await post('/api/auth/sign-in/username',{username,password},{Origin:'https://untrusted.example'})).status,403);
+const verifier=randomBytes(32).toString('hex'),state=randomBytes(16).toString('hex'),challenge=createHash('sha256').update(verifier).digest('hex');const cb=await fetch(`${base}/mobile-callback?state=${state}&challenge=${challenge}`,{headers:{cookie}});assert.equal(cb.status,200);const html=await cb.text();const href=html.match(/href="(hardwaregarden:[^"]+)"/)[1];const token=new URL(href).searchParams.get('token');
+assert.equal((await post('/api/mobile/exchange',{token,verifier:'0'.repeat(64)},{Origin:'capacitor://localhost'})).status,400);
+const exchange=await post('/api/mobile/exchange',{token,verifier},{Origin:'capacitor://localhost'});assert.equal(exchange.status,200);assert.equal(exchange.headers.get('access-control-allow-origin'),'capacitor://localhost');const bearer=exchange.headers.get('set-auth-token');assert.ok(bearer,'Mobile exchange must return a signed bearer session.');
+const native=await fetch(base+'/api/session',{headers:{Authorization:'Bearer '+bearer}}).then(r=>r.json());assert.equal(native.id,identity.id);
+const nativeProgress=await post('/api/progress',{}, {Origin:'capacitor://localhost',Authorization:'Bearer '+bearer,'X-Learning-Account':identity.id,'Sec-Fetch-Site':'cross-site'});assert.equal(nativeProgress.status,200);
+assert.equal((await post('/api/mobile/exchange',{token,verifier},{Origin:'capacitor://localhost'})).status,400,'One-time tokens must not replay.');
+assert.equal((await post('/api/auth/sign-out',{}, {cookie})).status,200);const after=await fetch(base+'/api/session',{headers:{cookie}}).then(r=>r.json());assert.equal(after,null);
+console.log('PASS: account creation, username login, wrong-password rejection, server-owned progress, cross-origin rejection, PKCE-bound mobile exchange, secure signed bearer session, replay prevention, and sign-out.');

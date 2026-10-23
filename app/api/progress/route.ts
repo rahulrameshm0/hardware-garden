@@ -1,5 +1,6 @@
 import {env} from 'cloudflare:workers';
-import {getChatGPTUser} from '../../chatgpt-auth';
+import {getLearningUser} from '../../../lib/auth-user';
+import {cors,preflight,nativeOrigin} from '../../../lib/api-cors';
 import {lessons} from '../../../lib/course';
 import type {Progress,ProgressMap} from '../../../lib/progress';
 export const dynamic='force-dynamic';
@@ -8,15 +9,15 @@ async function read(userId:string){
  const {results}=await env.DB!.prepare('SELECT * FROM learning_progress WHERE user_id = ?').bind(userId).all<{lesson_id:string;completed:number;score:number;step:number;position_at:number;bookmarked:number;bookmark_at:number}>();
  return Object.fromEntries(results.map(r=>[r.lesson_id,{completed:!!r.completed,score:r.score,step:r.step,positionAt:r.position_at,bookmarked:!!r.bookmarked,bookmarkAt:r.bookmark_at}]));
 }
-export async function GET(request:Request){
- const user=await getChatGPTUser();if(!user)return Response.json({error:'Sign in to load progress.'},{status:401,headers});
+async function readProgress(request:Request){
+ const user=await getLearningUser(request);if(!user)return Response.json({error:'Sign in to load progress.'},{status:401,headers});
  if(request.headers.get('x-learning-account')!==user.userId)return Response.json({error:'Account changed. Reconnect to sync.'},{status:409,headers});
  try{return Response.json(await read(user.userId),{headers});}catch{return Response.json({error:'Progress is temporarily unavailable. Your device copy is safe.'},{status:503,headers});}
 }
-export async function POST(request:Request){
- const user=await getChatGPTUser();if(!user)return Response.json({error:'Sign in to save progress.'},{status:401,headers});
+async function saveProgress(request:Request){
+ const user=await getLearningUser(request);if(!user)return Response.json({error:'Sign in to save progress.'},{status:401,headers});
  if(request.headers.get('x-learning-account')!==user.userId)return Response.json({error:'Account changed. Reconnect to sync.'},{status:409,headers});
- const origin=request.headers.get('origin');if((origin&&origin!==new URL(request.url).origin)||request.headers.get('sec-fetch-site')==='cross-site')return Response.json({error:'Invalid origin.'},{status:403,headers});
+ const origin=request.headers.get('origin');if((origin&&origin!==new URL(request.url).origin&&!nativeOrigin(origin))||(request.headers.get('sec-fetch-site')==='cross-site'&&!nativeOrigin(origin)))return Response.json({error:'Invalid origin.'},{status:403,headers});
  let body:unknown;try{const raw=await request.text();if(raw.length>24000)throw Error();body=JSON.parse(raw);}catch{return Response.json({error:'Invalid progress data.'},{status:400,headers});}
  if(!body||typeof body!=='object'||Array.isArray(body)||Object.keys(body).length>32)return Response.json({error:'Invalid progress data.'},{status:400,headers});
  const ids=new Set(lessons.map(l=>l.id));const maxTime=Date.now()+300000;
@@ -30,3 +31,7 @@ export async function POST(request:Request){
  return Response.json(await read(user.userId),{headers});
  }catch{return Response.json({error:'Could not sync. Your progress remains on this device.'},{status:503,headers});}
 }
+
+export async function GET(request:Request){return cors(await readProgress(request),request);}
+export async function POST(request:Request){return cors(await saveProgress(request),request);}
+export const OPTIONS=preflight;

@@ -1,0 +1,50 @@
+name: Build mobile apps
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - run: npm ci --no-audit --no-fund
+      - run: npm run mobile:build
+      - run: npx cap sync android
+      - run: chmod +x android/gradlew
+      - run: ./gradlew assembleDebug --no-daemon
+        working-directory: android
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Hardware-Garden-Android-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+  ios:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run mobile:build
+      - run: npx cap sync ios
+      - run: xcodebuild -project ios/App/App.xcodeproj -scheme App -sdk iphonesimulator -configuration Debug -derivedDataPath outputs/ios CODE_SIGNING_ALLOWED=NO build
+      - run: ditto -c -k --sequesterRsrc --keepParent outputs/ios/Build/Products/Debug-iphonesimulator/App.app outputs/Hardware-Garden-iOS-Simulator.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Hardware-Garden-iOS-Simulator
+          path: outputs/Hardware-Garden-iOS-Simulator.zip
+          retention-days: 14

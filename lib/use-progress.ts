@@ -1,7 +1,8 @@
 'use client';
 import {useCallback,useEffect,useRef,useState} from 'react';
+import {apiFetch} from './api-client';
 import {emptyProgress,mergeProgress,type Progress,type ProgressMap} from './progress';
-type User={id:string;name:string};
+type User={id:string;name:string;kind?:'account'|'chatgpt'};
 export function useProgress(){
  const [user,setUser]=useState<User|null>(null),[progress,setProgress]=useState<ProgressMap>({}),[status,setStatus]=useState('Connecting…');
  const current=useRef<User|null>(null),data=useRef<ProgressMap>({}),busy=useRef(false),mounted=useRef(false),revision=useRef(0);
@@ -10,13 +11,13 @@ export function useProgress(){
  if(busy.current)return;busy.current=true;
  try{
  if(!navigator.onLine){setStatus('Offline · saved on this device');return;}
- const session=await fetch('/api/session',{cache:'no-store',signal:AbortSignal.timeout(8000)});if(!session.ok)throw Error();const next:User|null=await session.json();
+ const session=await apiFetch('/api/session',{cache:'no-store',signal:AbortSignal.timeout(8000)});if(!session.ok)throw Error();const next:User|null=await session.json();
  if(!next){current.current=null;setUser(null);data.current={};setProgress({});localStorage.removeItem('hg-session');setStatus('Sign in to save your progress');return;}
  if(current.current?.id!==next.id){let cached={};try{cached=JSON.parse(localStorage.getItem('hg-progress:'+next.id)||'{}');}catch{}current.current=next;setUser(next);persist(cached);}
  localStorage.setItem('hg-session',JSON.stringify(next));setStatus('Syncing…');
- const remote=await fetch('/api/progress',{cache:'no-store',signal:AbortSignal.timeout(8000),headers:{'X-Learning-Account':next.id}});if(!remote.ok)throw Error();persist(mergeProgress(data.current,await remote.json()));
+ const remote=await apiFetch('/api/progress',{cache:'no-store',signal:AbortSignal.timeout(8000),headers:{'X-Learning-Account':next.id}});if(!remote.ok)throw Error();persist(mergeProgress(data.current,await remote.json()));
  const sentRevision=revision.current;
- const saved=await fetch('/api/progress',{method:'POST',signal:AbortSignal.timeout(8000),headers:{'Content-Type':'application/json','X-Learning-Account':next.id},body:JSON.stringify(data.current)});if(!saved.ok)throw Error();persist(mergeProgress(data.current,await saved.json()));
+ const saved=await apiFetch('/api/progress',{method:'POST',signal:AbortSignal.timeout(8000),headers:{'Content-Type':'application/json','X-Learning-Account':next.id},body:JSON.stringify(data.current)});if(!saved.ok)throw Error();persist(mergeProgress(data.current,await saved.json()));
  setStatus(sentRevision===revision.current?'All progress saved':'Saving changes…');
  }catch{if(!current.current)try{const cached=JSON.parse(localStorage.getItem('hg-session')||'null');if(cached){current.current=cached;setUser(cached);persist(JSON.parse(localStorage.getItem('hg-progress:'+cached.id)||'{}'));}}catch{}setStatus(navigator.onLine?'Sync paused · retry when ready':'Offline · saved on this device');}finally{busy.current=false;}
  },[persist]);

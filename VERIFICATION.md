@@ -22,3 +22,13 @@ Checked on 23 October 2026.
 ## Practical limits
 
 Browser dimensions simulate devices; no physical Android/iPhone installation or real second-device session was available. Hosted sign-in is provided by Sites and remains distinct from local mock sign-in. Course duration is an estimate including exploration, activities, and quizzes. Models are procedural CSS 3D educational illustrations. Captions are text-based interactive animations, not narrated recordings.
+
+## Realistic hardware and native update
+
+- Three.js viewer and dark theme reviewed in the local browser; full RGB memory modules fit inside the scene.
+- TypeScript, existing course/database tests, and the original local API checks pass after the update.
+- Real local username account creation and login pass, including rejected wrong passwords, saved progress, cross-origin protection, PKCE-bound mobile exchange, signed bearer session verification, replay prevention, and logout.
+- Android and iOS native projects were generated and synchronized. The mobile web bundle builds successfully.
+- Google project creation succeeded; OAuth onboarding is unfinished because the browser connection closed. Apple developer credentials were unavailable.
+- The current private hosting gate is preserved. Native API access from a fresh installation remains dependent on replacing that gate with the app's own sign-in.
+- Local native compilation is unavailable because this host has neither a full Xcode installation nor JDK/Android SDK. The repository includes a mobile build workflow for Android APK and iOS simulator artifacts; those results must be checked independently of the bundled web build.

@@ -43,3 +43,11 @@ yarn-error.log*
 
 # OS metadata
 .DS_Store
+
+# Native bundles and signing material
+/mobile-dist/
+*.keystore
+*.jks
+*.p8
+*.p12
+*.mobileprovision
