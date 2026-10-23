@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+const base='http://127.0.0.1:5173';
+const anon=await fetch(base+'/api/progress');assert.equal(anon.status,401);
+const login=await fetch(base+'/signin-with-chatgpt?return_to=/',{redirect:'manual'});const cookie=login.headers.getSetCookie().map(s=>s.split(';')[0]).join('; ');assert.ok(cookie);
+const session=await fetch(base+'/api/session',{headers:{cookie}}).then(r=>r.json());assert.equal(session.id,'local_seedy');
+const headers={cookie,'Content-Type':'application/json','X-Learning-Account':session.id};
+const get=await fetch(base+'/api/progress',{headers});assert.equal(get.status,200);assert.equal(get.headers.get('cache-control'),'no-store');
+assert.equal((await fetch(base+'/api/progress',{headers:{...headers,'X-Learning-Account':'someone-else'}})).status,409);
+assert.equal((await fetch(base+'/api/progress',{method:'POST',headers:{...headers,Origin:'https://untrusted.example'},body:'{}'})).status,403);
+assert.equal((await fetch(base+'/api/progress',{method:'POST',headers,body:JSON.stringify({'unknown-lesson':{}})})).status,400);
+assert.equal((await fetch(base+'/api/progress',{method:'POST',headers,body:JSON.stringify({'1-1':{completed:true,score:99,step:0,positionAt:0,bookmarked:false,bookmarkAt:0}})})).status,400);
+const save=await fetch(base+'/api/progress',{method:'POST',headers,body:'{}'});assert.equal(save.status,200);
+console.log('PASS: anonymous denial, local sign-in, authenticated reads, no-store, account mismatch rejection, origin protection, lesson and score validation, repeated sync.');

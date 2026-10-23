@@ -1,0 +1,9 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {DatabaseSync} from 'node:sqlite';
+import {readFileSync} from 'node:fs';
+const source=readFileSync(new URL('../app/api/progress/route.ts',import.meta.url),'utf8');
+const sql=source.match(/prepare\(`(INSERT INTO[\s\S]+?)`\)/)[1];
+function database(){const db=new DatabaseSync(':memory:');db.exec(readFileSync(new URL('../drizzle/0000_demonic_thanos.sql',import.meta.url),'utf8'));return db;}
+test('production upsert preserves completion, best score, independent bookmark and reading clocks',()=>{const db=database();const save=db.prepare(sql);save.run('alice','1-1',1,3,4,300,1,100);save.run('alice','1-1',0,1,1,200,0,400);const row=db.prepare('SELECT * FROM learning_progress WHERE user_id=? AND lesson_id=?').get('alice','1-1');assert.equal(row.completed,1);assert.equal(row.score,3);assert.equal(row.step,4);assert.equal(row.bookmarked,0);assert.equal(row.bookmark_at,400);save.run('alice','1-1',0,0,2,500,1,200);const next=db.prepare('SELECT * FROM learning_progress WHERE user_id=?').get('alice');assert.equal(next.step,2);assert.equal(next.bookmarked,0);assert.equal(next.completed,1);db.close();});
+test('database keys and reads isolate accounts even for the same lesson',()=>{const db=database();const save=db.prepare(sql);save.run('alice','1-1',1,3,4,300,1,100);save.run('bob','1-1',0,1,0,150,0,50);const a=db.prepare('SELECT * FROM learning_progress WHERE user_id = ?').all('alice');const b=db.prepare('SELECT * FROM learning_progress WHERE user_id = ?').all('bob');assert.equal(a.length,1);assert.equal(b.length,1);assert.equal(a[0].score,3);assert.equal(b[0].score,1);assert.equal(b[0].completed,0);assert.equal(db.prepare('SELECT * FROM learning_progress WHERE user_id = ?').all('unknown').length,0);db.close();});
