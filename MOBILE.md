@@ -26,3 +26,7 @@ The owner approved replacing the platform ChatGPT-only gate with application sig
 Username/password sign-in uses the app API directly. Google and Apple use the system browser, not an embedded webview. The app creates a verifier and state, sends only a SHA-256 challenge to the browser, then receives a one-minute, single-use exchange code through `hardwaregarden://auth`. The server checks the verifier before consuming the code. Session tokens are stored in Android encrypted storage or iOS Keychain through the secure storage plugin; ordinary preferences hold only course progress and UI preferences.
 
 Both native projects register the callback URL. iOS includes the preferences privacy manifest. No camera, microphone, contacts, or location permissions are requested.
+
+## Version 2.1
+
+A consistent 64px mobile header, five equal navigation items, safe-area-aware content padding, aligned lesson controls, and a dedicated Settings tab replace the previous mixed navigation styles. Settings persist locally and control theme, reading size, reduced motion, simple lesson summaries, default hardware view, Gemini answers, voice source, and speaking speed. Android Back closes the assistant or drawer before navigating. Account and synchronization controls remain available in Settings.
