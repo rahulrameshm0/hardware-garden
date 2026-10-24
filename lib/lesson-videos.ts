@@ -121,16 +121,17 @@ export const topicVideos:Record<string,TopicVideo> = {
   "author": "TechSource"
  }
 };
+Object.assign(topicVideos,{"ports": {"id": "yq9qzw8p7FI", "title": "Computer Basics: Buttons and Ports on a Computer", "author": "LearnFree"}, "laptop": {"id": "6LIv2ocJXRk", "title": "Computer Basics: Getting to Know Laptop Computers", "author": "LearnFree"}, "osbasic": {"id": "fkGCLIQx1MI", "title": "Computer Basics: Understanding Operating Systems", "author": "LearnFree"}, "partsintro": {"id": "mLgTnkw558w", "title": "Parts of a Computer Explained for Beginners", "author": "LearnFree"}});
 // Three different related videos for the three explanation sections of every lesson.
 export const lessonVideoKeys:Record<string,[string,string,string]>={
-'1-1':['computer','software','io'],'1-2':['io','storage','files'],'1-3':['software','os','computer'],'1-4':['computer','parts','io'],
+'1-1':['computer','software','io'],'1-2':['io','storage','files'],'1-3':['software','osbasic','computer'],'1-4':['partsintro','laptop','computer'],
 '2-1':['parts','ram','cpu'],'2-2':['cpu','alu','io'],'2-3':['ram','storage','files'],'2-4':['parts','build','clean'],
-'3-1':['parts','wires','build'],'3-2':['io','wires','cache'],'3-3':['io','software','cpu'],'3-4':['internet','wires','computer'],
+'3-1':['ports','partsintro','wires'],'3-2':['io','wires','cache'],'3-3':['io','software','cpu'],'3-4':['internet','wires','computer'],
 '4-1':['voltage','logic','capacitor'],'4-2':['voltage','logic','diode'],'4-3':['voltage','capacitor','diode'],'4-4':['voltage','parts','clean'],
 '5-1':['binary','numbers','io'],'5-2':['binary','numbers','alu'],'5-3':['logic','gates','alu'],'5-4':['gates','alu','ram'],
 '6-1':['cpu','alu','ram'],'6-2':['cache','ram','storage'],'6-3':['ram','cache','storage'],'6-4':['cpu','cache','storage'],
 '7-1':['parts','build','build2'],'7-2':['workspace','clean','build'],'7-3':['build','build2','parts'],'7-4':['build2','os','files'],
-'8-1':['clean','parts','workspace'],'8-2':['parts','build','workspace'],'8-3':['os','ram','clean'],'8-4':['files','storage','software']
+'8-1':['clean','parts','workspace'],'8-2':['parts','build','workspace'],'8-3':['osbasic','ram','clean'],'8-4':['files','storage','software']
 };
 export function sectionVideo(id:string,index:number){return topicVideos[lessonVideoKeys[id][index]];}
 export const youtubeUrl=(video:TopicVideo)=>`https://www.youtube.com/watch?v=${video.id}`;
