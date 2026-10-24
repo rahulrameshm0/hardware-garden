@@ -10,11 +10,11 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.hardwaregarden.native",
+      "bundleIdentifier": "com.hardwaregarden.mobile",
       "buildNumber": "1"
     },
     "android": {
-      "package": "com.hardwaregarden.native",
+      "package": "com.hardwaregarden.mobile",
       "versionCode": 1,
       "softwareKeyboardLayoutMode": "resize",
       "blockedPermissions": [

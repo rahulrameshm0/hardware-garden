@@ -30,3 +30,7 @@ Both native projects register the callback URL. iOS includes the preferences pri
 ## Version 2.1
 
 A consistent 64px mobile header, five equal navigation items, safe-area-aware content padding, aligned lesson controls, and a dedicated Settings tab replace the previous mixed navigation styles. Settings persist locally and control theme, reading size, reduced motion, simple lesson summaries, default hardware view, Gemini answers, voice source, and speaking speed. Android Back closes the assistant or drawer before navigating. Account and synchronization controls remain available in Settings.
+
+## Expo native release (3.0)
+
+The newer mobile app is in `expo-app/`. Its Expo project and Android installer are managed by EAS. See [the Expo app README](expo-app/README.md) for Android/iPhone launch instructions and validation limits. The earlier Capacitor 2.x downloads are preserved for existing users; they are not the Expo 3.0 app.
