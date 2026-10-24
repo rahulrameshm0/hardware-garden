@@ -6,11 +6,11 @@ A React Native app for Android and iOS, separate from the Capacitor/web client. 
 
 Project: https://expo.dev/accounts/rahulrameshm0/projects/hardware-garden
 
-Preview for Android/iPhone: https://expo.dev/accounts/rahulrameshm0/projects/hardware-garden/updates
+Preview for Android/iPhone: https://expo.dev/accounts/rahulrameshm0/projects/hardware-garden/updates/f21f4ab1-a882-4b2f-8a1a-e7d1469aa8b4
 
 Install the current Expo Go (SDK 58) and sign into the Expo account `rahulrameshm0`, then open this project's preview QR from the update page. Expo Go restricts EAS updates to projects owned by the signed-in account or its organizations. This is a native preview inside Expo Go, not an App Store release.
 
-Android standalone installer: https://expo.dev/accounts/rahulrameshm0/projects/hardware-garden/builds
+Android standalone installer: https://expo.dev/accounts/rahulrameshm0/projects/hardware-garden/builds/c3570139-096a-4635-a62a-87600eca5a4d
 
 A standalone iPhone/TestFlight release needs the owner's Apple Developer team and signing credentials. No Apple membership or paid billing was purchased. The `simulator` build profile targets iOS Simulator; it cannot install on a physical iPhone.
 
