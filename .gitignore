@@ -57,3 +57,8 @@ yarn-error.log*
 /.vercel/
 /vercel-dist/
 /release/*.apk
+
+# Expo native application
+/expo-app/node_modules/
+/expo-app/.expo/
+/expo-app/dist/

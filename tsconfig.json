@@ -41,13 +41,14 @@
     "**/*.mts"
   ],
   "exclude": [
-    "node_modules",
-    "examples",
+    "expo-app",
     "dist",
+    "node_modules",
     ".vinext",
-    ".wrangler",
-    ".sites-runtime",
     "outputs",
-    "work"
+    ".sites-runtime",
+    "examples",
+    "work",
+    ".wrangler"
   ]
 }

@@ -6,7 +6,7 @@ import {useNaturalVoice} from '../lib/use-natural-voice';
 import {usePreferences} from '../lib/preferences';
 export function NaturalNarration({text}:{text:string}){
  const voice=useNaturalVoice(),preferences=usePreferences();
- return <div className="section-narration"><button className="secondary-button" onClick={()=>voice.busy||voice.speaking?voice.stop():void voice.play(text,Number(preferences.voiceSpeed))}>{voice.busy?<LoaderCircle size={17}/>:voice.speaking?<Square size={17}/>:<Volume2 size={17}/>} {voice.busy?'Cancel loading':voice.speaking?'Stop narration':'Listen · natural voice'}</button><small>Natural AI-generated speech · sign-in required</small>{voice.error&&<p role="status">{voice.error}</p>}</div>;
+ return <div className="section-narration"><button className="secondary-button" onClick={()=>voice.busy||voice.speaking?voice.stop():void voice.play(text,Number(preferences.voiceSpeed))}>{voice.busy?<LoaderCircle size={17}/>:voice.speaking?<Square size={17}/>:<Volume2 size={17}/>} {voice.busy?'Cancel loading':voice.speaking?'Stop narration':'Listen · natural voice'}</button><audio ref={voice.element} controls hidden={!voice.ready} aria-label="Natural narration audio player"/><small>Natural AI-generated speech · sign-in required</small>{voice.error&&<p role="status">{voice.error}</p>}</div>;
 }
 export default function SectionVideo({lessonId,index,text}:{lessonId:string;index:number;text:string}){
  const video=sectionVideo(lessonId,index),[loaded,setLoaded]=useState(false),identity=useRef({});

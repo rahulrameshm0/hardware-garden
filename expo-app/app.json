@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "Hardware Garden",
+    "slug": "hardware-garden",
+    "owner": "rahulrameshm0",
+    "version": "3.0.0",
+    "orientation": "portrait",
+    "scheme": "hardwaregarden",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hardwaregarden.native",
+      "buildNumber": "1"
+    },
+    "android": {
+      "package": "com.hardwaregarden.native",
+      "versionCode": 1,
+      "softwareKeyboardLayoutMode": "resize",
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "enableBackgroundRecording": false,
+          "enableBackgroundPlayback": false
+        }
+      ]
+    ],
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "941002a8-412b-41a9-8c1f-038bfb9e9f43"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/941002a8-412b-41a9-8c1f-038bfb9e9f43"
+    }
+  }
+}
