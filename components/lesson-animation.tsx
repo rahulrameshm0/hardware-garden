@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useState} from 'react';
+import {useNaturalVoice} from '../lib/use-natural-voice';
 import {Play,Pause,RotateCcw,SkipForward,Volume2,VolumeX,Keyboard,Monitor,Cpu,Camera,Save,FolderOpen,Music,Settings,Speaker,Laptop,Smartphone,MemoryStick,Network,HardDrive,Power,Gpu,Flame,Fan,Cable,MousePointer,Router,Globe,Zap,Lightbulb,ToggleLeft,ToggleRight,Battery,ArrowRight,Binary,Calculator,Layers,Download,Search,Mailbox,Clock,CheckCircle,ShieldCheck,BookOpen,Hand,Package,Stethoscope,FileCheck,Copy,Wind,Plug,TriangleAlert,type LucideIcon} from 'lucide-react';
 import {useReducedMotion} from '../lib/preferences';
 import {chapterStories} from '../lib/chapter-stories';
@@ -15,16 +16,17 @@ const art:Record<string,LucideIcon[]>={
 '8-1':[Wind,Fan,ShieldCheck,Wind],'8-2':[ShieldCheck,Plug,Search,TriangleAlert],'8-3':[Search,Stethoscope,Settings,FileCheck],'8-4':[FolderOpen,Copy,FileCheck,Download]};
 export default function LessonAnimation({lesson}:{lesson:Lesson}){
  const story=chapterStories[lesson.id],icons=art[lesson.id];
- const [frame,setFrame]=useState(0),[elapsed,setElapsed]=useState(0),[playing,setPlaying]=useState(false),[speed,setSpeed]=useState(1),[voice,setVoice]=useState(false),[voiceAvailable,setVoiceAvailable]=useState(false),[voiceError,setVoiceError]=useState('');
- const reduced=useReducedMotion();
+ const [frame,setFrame]=useState(0),[elapsed,setElapsed]=useState(0),[playing,setPlaying]=useState(false),[speed,setSpeed]=useState(1),[voice,setVoice]=useState(false);
+ const reduced=useReducedMotion(),narration=useNaturalVoice();
  const durations=story.captions.map(c=>Math.max(9000,c.split(/\s+/).length/2*1000+1500));
  const total=durations.reduce((a,b)=>a+b,0),position=durations.slice(0,frame).reduce((a,b)=>a+b,0)+elapsed;
- useEffect(()=>{setVoiceAvailable('speechSynthesis' in window);},[]);
+
  useEffect(()=>{setFrame(0);setElapsed(0);setPlaying(false);},[lesson.id]);
  useEffect(()=>{if(reduced)setPlaying(false);},[reduced]);
- useEffect(()=>{if(!playing||reduced)return;const timer=setInterval(()=>setElapsed(t=>t+100*speed),100);return()=>clearInterval(timer);},[playing,speed,reduced]);
+ useEffect(()=>{if(!playing||reduced||voice)return;const timer=setInterval(()=>setElapsed(t=>t+100*speed),100);return()=>clearInterval(timer);},[playing,speed,reduced,voice]);
  useEffect(()=>{if(elapsed<durations[frame])return;if(frame===3){setElapsed(durations[3]);setPlaying(false);}else{setFrame(f=>f+1);setElapsed(0);}},[elapsed,frame,durations]);
- useEffect(()=>{if(!voiceAvailable)return;window.speechSynthesis.cancel();if(!voice||!playing)return;const speech=new SpeechSynthesisUtterance(story.captions[frame]);speech.lang='en-US';speech.rate=.85*speed;speech.onerror=e=>{if(e.error!=='interrupted'&&e.error!=='canceled')setVoiceError('Read-aloud is unavailable. You can follow every word in the captions.');};window.speechSynthesis.speak(speech);return()=>window.speechSynthesis.cancel();},[voice,voiceAvailable,playing,frame,speed,lesson.id,story]);
+ useEffect(()=>{if(!voice||!playing){narration.stop();return;}void narration.play(story.captions[frame],speed,()=>setElapsed(durations[frame]));return narration.stop;},[voice,playing,frame,speed,lesson.id,narration.play,narration.stop]);
+ useEffect(()=>{if(narration.error)setPlaying(false);},[narration.error]);
  const seek=(n:number)=>{setPlaying(false);setFrame(n);setElapsed(0);};
  const Icon=icons[frame],done=frame===3&&elapsed>=durations[3];
  return <section className="chapter-video" aria-label={`Animated chapter: ${lesson.title}`}>
@@ -41,8 +43,8 @@ export default function LessonAnimation({lesson}:{lesson:Lesson}){
  </div>
  <div className="story-caption" aria-live={playing?'off':'polite'}><span>{String(frame+1).padStart(2,'0')}</span><p>{story.captions[frame]}</p></div>
  <div className="story-timeline"><label htmlFor={`video-${lesson.id}`}>Chapter timeline</label><input id={`video-${lesson.id}`} type="range" min="0" max="3" step="1" value={frame} onChange={e=>seek(Number(e.target.value))} aria-valuetext={`Scene ${frame+1}: ${story.scenes[frame]}`}/><progress max={total} value={position} aria-label="Playback progress"/></div>
- <div className="story-controls"><button className="small-primary" disabled={reduced} onClick={()=>{if(done){setFrame(0);setElapsed(0);}setPlaying(p=>!p);}}>{playing?<Pause size={18}/>:<Play size={18}/>} {playing?'Pause':done?'Watch again':'Play story'}</button><button onClick={()=>{setFrame(0);setElapsed(0);setPlaying(!reduced);}} aria-label="Replay story"><RotateCcw size={19}/></button><button onClick={()=>seek((frame+1)%4)} aria-label="Next scene"><SkipForward size={19}/></button><button disabled={!voiceAvailable} aria-pressed={voice} onClick={()=>{setVoice(v=>!v);setVoiceError('');}} aria-label={voice?'Turn read-aloud off':'Turn read-aloud on'}>{voice?<Volume2 size={19}/>:<VolumeX size={19}/>}<span>Read aloud {voice?'on':'off'}</span></button><label>Speed<select aria-label="Story speed" value={speed} onChange={e=>setSpeed(Number(e.target.value))}><option value={.75}>0.75×</option><option value={1}>1×</option><option value={1.25}>1.25×</option></select></label></div>
- {reduced&&<p className="story-notice">Reduced motion is on. Choose a scene or use Next to read at your own pace.</p>}{voiceError&&<p className="story-notice" role="status">{voiceError}</p>}
+ <div className="story-controls"><button className="small-primary" disabled={reduced} onClick={()=>{if(done){setFrame(0);setElapsed(0);}setPlaying(p=>!p);}}>{playing?<Pause size={18}/>:<Play size={18}/>} {playing?'Pause':done?'Watch again':'Play story'}</button><button onClick={()=>{setFrame(0);setElapsed(0);setPlaying(!reduced);}} aria-label="Replay story"><RotateCcw size={19}/></button><button onClick={()=>seek((frame+1)%4)} aria-label="Next scene"><SkipForward size={19}/></button><button aria-pressed={voice} onClick={()=>{setVoice(v=>!v);}} aria-label={voice?'Turn natural narration off':'Turn natural narration on'}>{voice?<Volume2 size={19}/>:<VolumeX size={19}/>}<span>Natural voice {voice?'on':'off'}</span></button><label>Speed<select aria-label="Story speed" value={speed} onChange={e=>setSpeed(Number(e.target.value))}><option value={.75}>0.75×</option><option value={1}>1×</option><option value={1.25}>1.25×</option></select></label></div>
+ {reduced&&<p className="story-notice">Reduced motion is on. Choose a scene or use Next to read at your own pace.</p>}{narration.busy&&<p className="story-notice" role="status">Preparing natural AI narration…</p>}{narration.error&&<p className="story-notice" role="status">{narration.error}</p>}<p className="story-notice">Natural voice is AI-generated and requires sign-in. Original spoken explanations are available in the section videos.</p>
  <aside className="story-takeaway"><Lightbulb size={21}/><span><strong>The big idea</strong>{story.takeaway}</span></aside>
  <details className="story-transcript"><summary>Read the whole story</summary><ol>{story.captions.map((c,i)=><li key={i}><strong>{story.scenes[i]}</strong><p>{c}</p></li>)}</ol></details>
  {lesson.safety&&<p className="story-notice"><strong>Safety first:</strong> {lesson.safety}</p>}
