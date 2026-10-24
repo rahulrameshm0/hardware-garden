@@ -51,3 +51,9 @@ yarn-error.log*
 *.p8
 *.p12
 *.mobileprovision
+.vercel
+
+# Vercel deployment output and binary delivery
+/.vercel/
+/vercel-dist/
+/release/*.apk

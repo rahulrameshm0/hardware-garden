@@ -1,9 +1,10 @@
+import {publicOrigin} from './public-origin';
 import {env} from 'cloudflare:workers';
 import {getLearningUser} from './auth-user';
 import {nativeOrigin} from './api-cors';
 export const aiEnv=()=>env as typeof env&{GEMINI_API_KEY?:string;GEMINI_MODEL?:string;GEMINI_VOICE_MODEL?:string};
 export async function assistantAccess(request:Request){
- const origin=request.headers.get('origin');if((origin&&origin!==new URL(request.url).origin&&!nativeOrigin(origin))||(request.headers.get('sec-fetch-site')==='cross-site'&&!nativeOrigin(origin)))return Response.json({error:'Invalid origin.'},{status:403});
+ const origin=request.headers.get('origin');if((origin&&origin!==publicOrigin(request)&&!nativeOrigin(origin))||(request.headers.get('sec-fetch-site')==='cross-site'&&!nativeOrigin(origin)))return Response.json({error:'Invalid origin.'},{status:403});
  const user=await getLearningUser(request);if(!user)return Response.json({error:'Sign in for Gemini answers. Here is a built-in explanation instead.'},{status:401});
  if(!aiEnv().GEMINI_API_KEY)return Response.json({error:'Gemini is not connected yet. Here is the built-in lesson guide.'},{status:503});
  // Atomic fixed-hour quota shared by text and speech; a stable row avoids unbounded records.

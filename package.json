@@ -16,7 +16,8 @@
     "mobile:sync": "npm run mobile:build && cap sync",
     "mobile:android": "cap open android",
     "mobile:ios": "cap open ios",
-    "test": "node --experimental-strip-types --test tests/*.test.mjs"
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "web:build": "vite build --config vite.web.config.ts"
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "^8.0.1",

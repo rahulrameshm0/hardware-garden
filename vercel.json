@@ -1,0 +1,14 @@
+{
+ "$schema":"https://openapi.vercel.sh/vercel.json",
+ "framework":null,
+ "buildCommand":"npm run web:build",
+ "outputDirectory":"vercel-dist",
+ "installCommand":"npm ci --no-audit --no-fund",
+ "functions":{"api/index.ts":{"maxDuration":60}},
+ "rewrites":[{"source":"/api/:path*","destination":"/api/index?route=:path*"}],
+ "headers":[
+  {"source":"/sw.js","headers":[{"key":"Cache-Control","value":"no-cache"}]},
+  {"source":"/downloads/(.*)","headers":[{"key":"Content-Disposition","value":"attachment"},{"key":"X-Content-Type-Options","value":"nosniff"}]},
+  {"source":"/(.*)","headers":[{"key":"Referrer-Policy","value":"strict-origin-when-cross-origin"},{"key":"X-Content-Type-Options","value":"nosniff"}]}
+ ]
+}
