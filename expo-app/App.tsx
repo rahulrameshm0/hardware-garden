@@ -931,7 +931,7 @@ function NativeApp() {
                         protected by the phone’s secure storage.
                       </T>
                       <T muted size={12}>
-                        Hardware Garden 3.0 · Expo native app
+                        Hardware Garden 3.0.1 · Expo native app
                       </T>
                     </Card>
                     <Button
@@ -1630,7 +1630,7 @@ function Account({ onSuccess }: { onSuccess: () => Promise<void> }) {
       const returnTo =
         Constants.executionEnvironment === "storeClient"
           ? "exp://u.expo.dev/941002a8-412b-41a9-8c1f-038bfb9e9f43?channel-name=preview&runtime-version=exposdk%3A58.0.0"
-          : "hardwaregarden://auth";
+          : "hardwaregardenexpo://auth";
       const result = await WebBrowser.openAuthSessionAsync(
         `${API}/mobile-auth?provider=google&state=${state}&challenge=${challenge}&returnTo=${encodeURIComponent(returnTo)}`,
         returnTo,
